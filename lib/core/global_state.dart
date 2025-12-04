@@ -126,17 +126,21 @@ class GlobalState extends ChangeNotifier {
     }
 
     int threats = 0;
-    // ... (Scan loop logic remains same as previous step) ...
+    
+    // Process the stream
     await for (final status in stream) {
       currentFile = status.currentFile;
       filesProcessed = status.processedCount;
       totalEstimate = status.totalEstimate;
+      
       progress = (filesProcessed / totalEstimate).clamp(0.0, 1.0);
       _updateTime();
+      
       notifyListeners();
       await Future.delayed(Duration.zero);
     }
 
+    // Log to History
     await DatabaseService.instance.logScan(type, filesProcessed, threats);
 
     isScanning = false;
@@ -161,7 +165,7 @@ class GlobalState extends ChangeNotifier {
   }
 
   // ------------------------------------------------------------------------
-  // 3. SCHEDULER & INIT
+  // 3. SCHEDULER & INIT SYSTEM
   // ------------------------------------------------------------------------
   Future<void> initSystem() async {
     final prefs = await SharedPreferences.getInstance();
@@ -170,7 +174,10 @@ class GlobalState extends ChangeNotifier {
     bool shieldOn = prefs.getBool('shield_active') ?? true;
     if (shieldOn) toggleShield(true);
 
-    // 2. Start Scheduler (Check every 60s)
+    // 2. AUTO-UPDATE: Check for virus definitions on startup
+    _updateVirusDefs(); 
+
+    // 3. Start Scheduler (Check every 60s)
     _schedulerTimer?.cancel();
     _schedulerTimer = Timer.periodic(const Duration(minutes: 1), (timer) async {
       bool enabled = prefs.getBool('schedule_enabled') ?? false;
@@ -191,5 +198,14 @@ class GlobalState extends ChangeNotifier {
         }
       }
     });
+  }
+
+  // Checks if DB is empty and pulls real data if needed
+  Future<void> _updateVirusDefs() async {
+    int count = await DatabaseService.instance.getSignatureCount();
+    if (count < 100) {
+      // If we have fewer than 100 signatures, assume empty/fresh install
+      await DatabaseService.instance.updateDefinitions();
+    }
   }
 }

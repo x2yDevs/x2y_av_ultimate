@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:x2y_av_ultimate/ui/theme_x2y.dart';
 import 'package:x2y_av_ultimate/engine/av_core.dart';
 import 'package:x2y_av_ultimate/core/startup_manager.dart';
+import 'package:x2y_av_ultimate/services/database_service.dart';
 
 class SettingsPane extends StatefulWidget {
   final Function(bool) onToggleShield;
@@ -67,6 +68,28 @@ class _SettingsPaneState extends State<SettingsPane> {
         const Text("Settings & Policy", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
 
+        // 0. THREAT INTELLIGENCE (DATABASE)
+        const Text("THREAT INTELLIGENCE", style: TextStyle(color: X2yColors.primary, fontSize: 11, fontWeight: FontWeight.bold)),
+        ListTile(
+          leading: const Icon(LucideIcons.database, color: X2yColors.textMain),
+          title: const Text("Update Virus Definitions"),
+          subtitle: FutureBuilder<int>(
+            future: DatabaseService.instance.getSignatureCount(),
+            builder: (c, s) => Text(s.hasData ? "${s.data} signatures loaded" : "Checking database..."),
+          ),
+          trailing: IconButton(
+            icon: const Icon(LucideIcons.refreshCw, color: X2yColors.secure),
+            onPressed: () async {
+              await DatabaseService.instance.updateDefinitions();
+              // Trigger rebuild to show new count
+              setState(() {}); 
+            },
+          ),
+        ),
+        
+        const Divider(color: X2yColors.sidebar),
+        const SizedBox(height: 10),
+
         // 1. PROTECTION
         const Text("REAL-TIME PROTECTION", style: TextStyle(color: X2yColors.primary, fontSize: 11, fontWeight: FontWeight.bold)),
         SwitchListTile(
@@ -120,6 +143,20 @@ class _SettingsPaneState extends State<SettingsPane> {
           onTap: () async {
             final t = await showTimePicker(context: context, initialTime: _scanTime);
             if(t != null) _saveSchedule(_scheduleEnabled, t);
+          },
+        ),
+
+        const Divider(color: X2yColors.sidebar),
+        const SizedBox(height: 10),
+        
+        // 4. SUPPORT
+        ListTile(
+          leading: const Icon(LucideIcons.mail, color: X2yColors.textDim),
+          title: const Text("Contact Support"),
+          subtitle: const Text("support@x2ydevs.xyz"),
+          onTap: () async {
+            final uri = Uri.parse("mailto:support@x2ydevs.xyz");
+            if (await canLaunchUrl(uri)) launchUrl(uri);
           },
         ),
       ],
