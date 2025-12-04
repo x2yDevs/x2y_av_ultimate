@@ -82,4 +82,5 @@ lib/generated_plugin_registrant.dart
 # *.iss
 
 # Ignore Quarantined files (Safety - Never upload malware samples)
-*.x2y_quarantine
+*.x2y_quarantine"installer_output/" 
+"assets/*.bmp" 
