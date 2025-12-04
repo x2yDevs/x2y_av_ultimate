@@ -67,16 +67,19 @@ linux/flutter/ephemeral/
 lib/generated_plugin_registrant.dart
 
 # x2y AV Ultimate Specific (Production)
-# Ignore the large installer output
-installer_output/
 
-# Ignore local database files (User history/Threats)
+# 1. ALLOW INSTALLER UPLOAD
+# (Commented out so you can push the exe to GitHub)
+# installer_output/
+
+# Ignore local database files (User history/Threats should stay local)
 *.db
 *.db-shm
 *.db-wal
 
-# Ignore the Inno Setup script (Optional: Remove this line if you want to save the script to Git)
-*.iss
+# 2. ALLOW SETUP SCRIPT UPLOAD
+# (Commented out so you can save your Inno Setup code)
+# *.iss
 
-# Ignore Quarantined files (Safety)
+# Ignore Quarantined files (Safety - Never upload malware samples)
 *.x2y_quarantine
