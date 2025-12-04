@@ -1,0 +1,57 @@
+name: x2y_av_ultimate
+description: Real-Time Security and System Integrity for Windows
+publish_to: 'none'
+version: 7.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI & Visuals
+  flutter_animate: ^4.5.0
+  google_fonts: ^6.1.0
+  window_manager: ^0.3.9
+  lucide_icons: ^0.257.0
+  intl: ^0.19.0
+  fl_chart: ^0.68.0
+
+  # System Interaction & Background
+  system_tray: ^2.0.2
+  file_picker: ^6.1.1
+  url_launcher: ^6.2.0
+  local_notifier: ^0.1.5
+  shared_preferences: ^2.2.2
+
+  # Core Logic
+  http: ^1.2.0
+  crypto: ^3.0.3
+  path: ^1.9.0
+  path_provider: ^2.1.2
+
+  # Database, Registry & Process
+  sqflite_common_ffi: ^2.3.2
+  sqlite3_flutter_libs: ^0.5.20
+  process_run: ^0.13.1
+  win32_registry: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  # Icon Generator
+  flutter_launcher_icons: ^0.13.1
+
+# Icon Configuration
+flutter_launcher_icons:
+  windows:
+    generate: true
+    image_path: "assets/x2y_icon.ico"
+    icon_size: 256
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/x2y_icon.ico
