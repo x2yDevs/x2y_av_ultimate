@@ -1,135 +1,121 @@
-# x2y AV Ultimate
-Real-Time Security & System Integrity for Windows
+Overview
 
-![Version](https://img.shields.io/badge/version-7.0.0-blue.svg) ![Platform](https://img.shields.io/badge/badge/platform-Windows-0078D6.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg)
+x2y AV Ultimate is a comprehensive endpoint security application for Windows that delivers real-time malware protection, network traffic monitoring, system persistence auditing, and threat intelligence management — all from a single lightweight desktop application. Built for both home users and security professionals
 
-**x2y AV Ultimate** is a professional-grade security utility developed by **x2y devs tools**. It delivers genuine, non-AI, production-level system protection by utilizing a Hybrid Architecture (Flutter UI + Native Windows Service) to execute privileged system checks, real-time file monitoring, and advanced malware persistence analysis.
+ x2y AV Ultimate operates entirely offline with no subscriptions, no cloud data uploads, and no telemetry. Your files and scan results never leave your machine.
 
-## 📝 Table of Contents
+x2y AV Ultimate integrates with industry-standard open-source security tools including ClamAV and YARA, and automatically pulls fresh threat intelligence from abuse.ch MalwareBazaar, URLhaus, and OpenPhish — keeping your protection current without any paid service contracts.
 
-*   [🌟 Features](#-features)
-*   [🚀 Technologies Used](#-technologies-used)
-*   [🛠️ Installation](#-installation)
-    *   [User Installation](#user-installation)
-    *   [Building from Source](#building-from-source)
-*   [💡 Usage](#-usage)
-*   [🤝 Contributing](#-contributing)
-*   [📜 License](#-license)
-*   [📞 Contact](#-contact)
+Key Features
 
-## 🌟 Features
+🛡 Multi-Layer Threat Detection
 
-### 1. Real-Time Protection Shield
+x2y AV Ultimate runs every file through six independent detection layers in sequence, stopping the moment a threat is confirmed. This approach eliminates false negatives that single-engine scanners routinely miss.
 
-*   **Active Monitoring:** Runs in the background (System Tray) watching high-risk entry points (Downloads, Desktop, Documents).
-*   **Instant Blocking:** Intercepts file creation events, calculates SHA-256 hashes, and compares them against a local threat database.
-*   **Kinetic Action:** Automatically kills malicious processes and quarantines files before execution.
+Hash Database Matching — Instantly identifies known malware by SHA256 and MD5 hash against a local SQLite database seeded with thousands of verified malware samples from MalwareBazaar
 
-### 2. Intelligent Scanning Engine
+ClamAV Engine Integration — Connects to the industry-trusted ClamAV engine for access to millions of signatures updated via the standard freshclam update system
 
-*   **Quick Scan:** Rapidly audits critical system areas (System32, User Root, Startup).
-*   **Full Scan:** Recursively traverses the entire file system with progress estimation.
-*   **Custom Scan:** Target specific files or folders for analysis.
-*   **Smart Filtering:** Uses exclusion zones to ignore trusted directories (configurable in Settings).
+YARA Rule Scanning — Loads and executes YARA rules from a local rules directory, fully compatible with the Yara-Rules community project and Florian Roth's signature-base
 
-### 3. Network Activity Monitor
+PE Binary Heuristics — Detects known executable packers including UPX, MPRESS, and Themida without requiring a signature, catching newly packed malware on day zero
 
-*   **Live Traffic Map:** Visualization of active network flow using dynamic charts.
-*   **Process Mapping:** Maps every TCP/UDP connection to its specific Process ID (PID) using native `netstat` calls.
-*   **Threat Intel:** Flags suspicious connections or non-standard ports.
+Behavioral Pattern Matching — Scans file contents for 20 high-confidence malicious patterns including obfuscated PowerShell, process injection sequences, living-off-the-land binary abuse, and ransomware kill-chain commands
 
-### 4. Persistence Auditor
+Entropy Analysis — Identifies encrypted or packed payloads by measuring byte entropy, flagging files that evade all signature-based detection
 
-*   **Registry Analysis:** Scans `HKCU` and `HKLM` Run keys for hidden malware.
-*   **Startup Folder:** Audits physical startup directories for unauthorized scripts or binaries.
+🌐 Real-Time Network Monitor
 
-### 5. Quarantine Vault
+A live view of every active network connection on the system, updated continuously with process attribution and automatic risk scoring.
 
-*   **Secure Isolation:** Threats are renamed to `.x2y_quarantine` and locked.
-*   **Management:** Users can Restore false positives or Permanently Delete threats.
+Maps every TCP and UDP connection to its originating process and PID
 
-## 🚀 Technologies Used
+Automatically flags connections to known command-and-control IP addresses, suspicious ports, algorithmically generated domains, and high-risk process-to-port combinations
 
-This application is built using **Flutter for Windows** with heavy reliance on FFI (Foreign Function Interface) for native system interactions.
+Live traffic sparkline chart shows bandwidth utilization at a glance
 
-*   **UI Framework:** Flutter (Dart)
-*   **Database Engine:** SQLite (via `sqflite_common_ffi`) - Stores Scan History and Threat Definitions.
-*   **Native Interop:**
-    *   `win32_registry`: For reading Windows Registry keys.
-    *   `process_run`: For executing `netstat` and `taskkill`.
-    *   `window_manager` & `system_tray`: For background persistence and window control.
-*   **Cryptography:** `crypto` package for SHA-256 file hashing.
+Right-click any connection to block the remote IP via Windows Firewall, terminate the process, capture a 10-second packet trace to a .pcap file, perform a WHOIS lookup, resolve the hostname, or tag the connection with a MITRE ATT&CK technique identifier
 
-## 🛠️ Installation
+All network operations run asynchronously — the interface never freezes during lookups or blocking actions
 
-### User Installation
+💾 Persistence Auditor
 
-1.  Go to the [Releases](https://github.com/x2yDevs/x2y_av_ultimate/releases) page.
-2.  Download the latest `x2y_av_setup.exe`.
-3.  Run the installer. The app will launch and minimize to the System Tray, providing real-time protection.
+A comprehensive audit of every mechanism on the system that survives a reboot, presented in a single unified view with risk scoring and MITRE ATT&CK mapping.
 
-### Building from Source
+Audits Windows Registry Run keys across both HKCU and HKLM, Startup folders, Scheduled Tasks, WMI Startup Commands, and registered Windows Services
 
-**Prerequisites:**
+Each entry is automatically assessed for suspicious characteristics including temp directory execution, encoded command arguments, and known living-off-the-land binary invocations
 
-*   Flutter SDK (version 3.0 or higher)
-*   Visual Studio 2022 (with the "Desktop development with C++" workload installed)
+Right-click any entry to disable it non-destructively, delete it permanently from both the registry and filesystem, run a full behavioral analysis with a 0–100 risk score, export it as a STIX 2.1 indicator for ingestion into MISP or Splunk, or scan the parent process that owns it
 
-```bash
-# 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/x2y_av_ultimate.git
-cd x2y_av_ultimate
+Export the complete audit to CSV for compliance reporting or incident response documentation
 
-# 2. Install dependencies
-flutter pub get
+☠ Quarantine Vault
 
-# 3. Generate Icons (Optional - requires flutter_launcher_icons package)
-dart run flutter_launcher_icons
+A secure, isolated storage area for confirmed threats removed from the active filesystem.
 
-# 4. Run in Debug Mode
-flutter run
+Quarantined files are renamed and stored in an isolated directory with no executable associations, preventing accidental execution
 
-# 5. Build Production Executable
-flutter build windows
-```
+Every quarantined file is tracked in a local database with its original path, threat name, detection method, SHA256 hash, file size, and quarantine timestamp
 
-## 💡 Usage
+Restore any file to its original location with a single click if a false positive is confirmed
 
-Once installed, **x2y AV Ultimate** runs silently in your system tray, offering continuous real-time protection.
+Permanently delete individual files or clear the entire vault
 
-*   **Accessing the UI:** Click the x2y AV icon in the system tray to open the main application window.
-*   **Initiating Scans:** From the dashboard, you can perform Quick, Full, or Custom scans.
-*   **Network Monitoring:** Navigate to the Network Activity Monitor to visualize active connections and identify potential threats.
-*   **Managing Threats:** Use the Quarantine Vault to review detected threats, restore false positives, or permanently delete malicious files.
+Auto-quarantine mode moves detected threats to the vault automatically during any scan without requiring user interaction
 
-### ⚙️ Configuration
+🌐 Threat Intelligence Center
 
-The app includes a robust Settings hub for customization:
+A dedicated hub for managing signature sources and performing on-demand threat lookups.
 
-*   **Run on Startup:** Toggles Registry keys to automatically launch x2y AV Ultimate with Windows.
-*   **Scheduled Scans:** Set daily scan times, which are saved to local storage.
-*   **Exclusions:** Add specific file paths or directories to be ignored by the Real-Time Shield and scanning engine.
+Update signatures from MalwareBazaar, URLhaus, OpenPhish, and ClamAV individually or all at once, with a live log showing exactly what was downloaded and how many indicators were added
 
-## 🤝 Contributing
+Instantly look up any SHA256 or MD5 hash against the local database to determine whether a file is known malware
 
-We welcome contributions to make x2y AV Ultimate even better! If you have suggestions, bug reports, or want to contribute code, please follow these steps:
+Live database statistics show total signature count and time of last update
 
-1.  Fork the repository.
-2.  Create a new branch (`git checkout -b feature/YourFeature` or `bugfix/FixBug`).
-3.  Make your changes and commit them (`git commit -m 'Add Your Feature'`).
-4.  Push to the branch (`git push origin feature/YourFeature`).
-5.  Open a Pull Request.
+Daily automatic updates run silently in the background on a configurable schedule
 
-Please ensure your code adheres to the project's coding standards and includes appropriate tests.
+⚙ Policy & Settings
 
-## 📜 License
+Every protection setting is fully configurable and takes effect immediately without requiring a restart.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Enable or disable the Background Shield, auto-quarantine, and desktop notifications independently
 
-## 📞 Contact
+Set heuristic detection sensitivity to Low, Medium, or High to balance detection rate against false positives
 
-For support, feedback, or general inquiries, please reach out to us:
+Configure daily quick scans and weekly full scans on a precise schedule with day-of-week and time-of-day controls
 
-*   **Email:** support@x2ydevs.xyz
-*   **Website:** [x2ydevs.xyz](https://x2ydevs.xyz)
+Add file and folder exclusions by path to prevent scanning of trusted locations
 
+Register x2y AV Ultimate to launch automatically at Windows startup
+
+Configure the quarantine vault storage location to any local or network path
+
+Full logging with configurable verbosity from DEBUG through ERROR, with a one-click log viewer
+
+System Requirements
+
+RequirementMinimumRecommendedOperating SystemWindows 10 (1809)Windows 10 22H2 or Windows 11Processor1 GHz dual-core2 GHz quad-coreMemory256 MB RAM512 MB RAMStorage150 MB500 MB (for full signature database)PermissionsStandard userAdministrator (for firewall rules and full system scan)InternetNot requiredRecommended for signature updates
+
+Privacy & Security
+
+x2y AV Ultimate is built on a strict local-first architecture. No file content, scan results, process names, network connection data, or user behavior is ever transmitted to any remote server. Signature updates are one-way downloads from public threat intelligence feeds. The application contains no analytics, no crash reporting pipelines, and no license validation calls. All data — settings, scan history, quarantine vault, and the signature database — is stored exclusively on the local machine under the user's home directory.
+
+x2y AV Ultimate is developed and maintained by x2y Devs Tools. For support, visit x2ydevs.xyz.
+
+
+
+📞 Support & Feedback
+
+We are committed to building the most transparent security tool on the market. If you encounter a bug, have a feature request, or need assistance, please contact our engineering team directly.
+
+Email Support: support@x2ydevs.xyz
+
+🌐 Developer Tools
+
+Explore our full suite of utilities and learn more about our development philosophy.
+
+Official Website: x2ydevs.xyz
+
+Developed by x2y devs tools. v8.5.0
